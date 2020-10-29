@@ -2,9 +2,8 @@ function printError(element, msg) {
 
     document.getElementById(element).innerHTML = msg;
 }
-var thumb = document.getElementById("thumb");
-var postThumb = thumb.cloneNode(true);
-console.log(thumb);
+
+
 var month = new Array();
 month[0] = "January";
 month[1] = "February";
@@ -19,10 +18,29 @@ month[9] = "October";
 month[10] = "November";
 month[11] = "December";
 
-
-var posts = document.getElementById("blog-post");
+var post = document.getElementById("blog-post");
+var posts = document.getElementsByClassName("blog-post");
 console.log(posts)
 
+var i;
+for (i = 0; i < posts.length; i++) {
+    var span = document.createElement("div");
+    var txt = document.createTextNode("\u00D7");
+    span.className = "close";
+
+    span.appendChild(txt);
+    posts[i].appendChild(span);
+}
+
+// Click on a close button to hide the current list item
+var close = document.getElementsByClassName("close");
+var i;
+for (i = 0; i < close.length; i++) {
+    close[i].onclick = function () {
+        var div = this.parentElement;
+        div.style.display = "none";
+    }
+}
 
 function createPost(title, name, content) {
     var post = document.createElement("div");
@@ -36,9 +54,9 @@ function createPost(title, name, content) {
     postContent.className = "blog-post-meta";
     var date = new Date();
     var n = month[date.getMonth()];
-    var meda = document.createTextNode(n +" " + date.getDate()+", " + date.getFullYear() + " by " + name)
+    var meda = document.createTextNode(n + " " + date.getDate() + ", " + date.getFullYear() + " by " + name)
     postContent.appendChild(meda);
- 
+
     var postData = document.createElement("p");
     var data = document.createTextNode(content);
     postData.appendChild(data);
@@ -47,7 +65,7 @@ function createPost(title, name, content) {
     post.appendChild(postTile);
     post.appendChild(postContent);
     post.appendChild(postData)
-    post.appendChild(postThumb);
+
 
     return post;
 }
@@ -127,7 +145,7 @@ function addPost() {
     if (content == "") {
         printError("contentErr", "Please enter your content")
     } else {
-        var regex = /^[a-zA-Z\s]+$/;
+        var regex = /^.+$/;
 
         if (regex.test(content) === false) {
             printError("contentErr", "Please enter your content")
@@ -142,12 +160,31 @@ function addPost() {
     if ((emailErr && fnameErr && lnameErr && titleErr && contentErr) === true) {
 
 
-        //document.getElementById("blog-post").appendChild(createPost(title, fname, content));
-        posts.insertBefore(createPost(title, fname, content), posts.childNodes[0]);
-        document.getElementById("postForm").removeAttribute("aria-expanded");
-        document.getElementById("postForm").setAttribute("aria-expanded", false);
-        document.getElementById("postForm").setAttribute("class", "collapsed");
-        document.getElementById("navbarHeader").setAttribute("class", "collapse");
+        try {
+
+            var p = createPost(title, fname, content);
+            post.insertBefore(p, post.childNodes[0]);
+
+            document.getElementById("postForm").removeAttribute("aria-expanded");
+            document.getElementById("postForm").setAttribute("aria-expanded", false);
+            document.getElementById("postForm").setAttribute("class", "collapsed");
+            document.getElementById("navbarHeader").setAttribute("class", "collapse");
+            var span = document.createElement("div");
+            var txt = document.createTextNode("\u00D7");
+            span.className = "close";
+            span.appendChild(txt);
+            p.appendChild(span);
+        
+
+            for (i = 0; i < close.length; i++) {
+                close[i].onclick = function () {
+                    var div = this.parentElement;
+                    div.style.display = "none";
+                }
+            }
+        } catch (e) {
+            console.log(e);
+        }
 
         document.postForm.email.value = "";
         document.postForm.fname.value = "";
